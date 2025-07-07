@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>画像処理デモ</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        .image-grid { display: flex; flex-wrap: wrap; gap: 10px; }
+        .image-grid div { width: 32%; }
+        img { width: 100%; border: 1px solid #ccc; }
+        table { margin-top: 20px; border-collapse: collapse; }
+        th, td { border: 1px solid #aaa; padding: 6px 10px; }
+    </style>
+</head>
+<body>
+    <h1>画像アップロード＆処理</h1>
+
+    {% if error %}
+        <p style="color:red;">{{ error }}</p>
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data">
+        <input type="file" name="file" accept="image/*">
+        <input type="submit" value="アップロード">
+    </form>
+
+    {% if filename %}
+        <h3>定量・定性評価</h3>
+        <table>
+            <tr>
+                <th>処理</th>
+                <th>ラプラシアン</th>
+                <th>PSNR</th>
+                <th>SSIM</th>
+                <th>定性コメント</th>
+            </tr>
+            {% for key, val in evaluations.items() %}
+            <tr>
+                <td>{{ loop.index }} 処理</td>
+                <td>{{ val.lap }}</td>
+                <td>{{ val.psnr }}</td>
+                <td>{{ val.ssim }}</td>
+                <td>{{ val.desc }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        <div class="image-grid">
+            <div>
+                <h4>元画像</h4>
+                <img src="{{ url_for('static', filename='uploads/' + filename) }}">
+            </div>
+            <div><h4>① アンシャープ</h4><img src="{{ url_for('static', filename='results/01_unsharp_mask.jpg') }}"></div>
+            <div><h4>② メディアン</h4><img src="{{ url_for('static', filename='results/02_median.jpg') }}"></div>
+            <div><h4>③ ラプラシアン</h4><img src="{{ url_for('static', filename='results/03_laplacian.jpg') }}"></div>
+            <div><h4>④ CLAHE</h4><img src="{{ url_for('static', filename='results/04_clahe.jpg') }}"></div>
+            <div><h4>⑤-1 デコンボリューション</h4><img src="{{ url_for('static', filename='results/05-1_deconv_small.jpg') }}"></div>
+            <div><h4>⑤-2 デコンボリューション</h4><img src="{{ url_for('static', filename='results/05-2_deconv_large.jpg') }}"></div>
+            <div><h4>⑤-3 デコンボリューション（RL）</h4><img src="{{ url_for('static', filename='results/05-3_rl_deconv.jpg') }}"></div>
+        </div>
+    {% endif %}
+</body>
+</html>
