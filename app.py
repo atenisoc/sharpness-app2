@@ -32,8 +32,19 @@ def apply_median(img):
     return cv2.medianBlur(img, 5)
 
 def apply_laplacian_filter(img):
-    lap = cv2.Laplacian(img, cv2.CV_64F)
-    return cv2.convertScaleAbs(lap)
+    # ガウシアンでノイズを抑制
+    blurred = cv2.GaussianBlur(img, (3, 3), 0)
+
+    # ラプラシアン適用
+    lap = cv2.Laplacian(blurred, cv2.CV_64F)
+    lap_abs = np.abs(lap)
+
+    # 強調（倍率10倍）＋ヒストグラム均等化
+    lap_scaled = np.clip(lap_abs * 10, 0, 255).astype(np.uint8)
+    lap_eq = cv2.equalizeHist(lap_scaled)
+
+    return lap_eq
+
 
 def apply_clahe(img):
     clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
@@ -106,7 +117,7 @@ def upload_file():
 
             save_and_evaluate(apply_unsharp_mask(img), '01_unsharp_mask')
             save_and_evaluate(apply_median(img), '02_median')
-            save_and_evaluate(apply_laplacian_filter(img), '03_laplacian')
+            save_and_evaluate(apply_laplacian_filter(img), '03_laplacian')  # ← 🔄ここが修正対象
             save_and_evaluate(apply_clahe(img), '04_clahe')
 
             psf = np.ones((5,5)) / 25

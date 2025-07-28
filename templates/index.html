@@ -1,63 +1,130 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <title>画像処理デモ</title>
-    <style>
-        body { font-family: sans-serif; padding: 20px; }
-        .image-grid { display: flex; flex-wrap: wrap; gap: 10px; }
-        .image-grid div { width: 32%; }
-        img { width: 100%; border: 1px solid #ccc; }
-        table { margin-top: 20px; border-collapse: collapse; }
-        th, td { border: 1px solid #aaa; padding: 6px 10px; }
-    </style>
+  <meta charset="UTF-8">
+  <title>画像処理デモ</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    h1, h2, h3 { margin-top: 30px; }
+    .highlight {
+      background-color: #fdf3d6;
+      padding: 6px 10px;
+      border-left: 6px solid #f5b042;
+    }
+    .image-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .image-grid div { width: 32%; }
+    img { width: 100%; border: 1px solid #ccc; }
+    table {
+      margin-top: 20px;
+      border-collapse: collapse;
+      width: 100%;
+    }
+    th, td {
+      border: 1px solid #aaa;
+      padding: 6px 10px;
+      text-align: center;
+    }
+    .promo-section {
+      margin-top: 20px;
+      margin-bottom: 30px;
+    }
+    .promo-section img {
+      width: 30%;
+      height: auto;
+      border: 1px solid #888;
+    }
+    .sample-grid {
+      display: flex;
+      flex-wrap: nowrap;
+      gap: 10px;
+      margin-top: 20px;
+      overflow-x: auto;
+    }
+    .sample-grid img {
+      width: 16%;
+      max-width: 160px;
+      height: auto;
+      border: 1px solid #ccc;
+    }
+  </style>
 </head>
 <body>
-    <h1>画像アップロード＆処理</h1>
 
-    {% if error %}
-        <p style="color:red;">{{ error }}</p>
-    {% endif %}
+  <h1 style="color: #444;">画像アップロード＆処理</h1>
 
-    <form method="post" enctype="multipart/form-data">
-        <input type="file" name="file" accept="image/*">
-        <input type="submit" value="アップロード">
-    </form>
+  {% if error %}
+    <p style="color:red;">{{ error }}</p>
+  {% endif %}
 
-    {% if filename %}
-        <h3>定量・定性評価</h3>
-        <table>
-            <tr>
-                <th>処理名</th>
-                <th>ラプラシアン</th>
-                <th>PSNR</th>
-                <th>SSIM</th>
-                <th>定性コメント</th>
-            </tr>
-            {% for key, val in evaluations.items() %}
-            <tr>
-                <td>{{ loop.index }} 処理</td>
-                <td>{{ val.lap }}</td>
-                <td>{{ val.psnr }}</td>
-                <td>{{ val.ssim }}</td>
-                <td>{{ val.desc }}</td>
-            </tr>
-            {% endfor %}
-        </table>
+  <form method="post" enctype="multipart/form-data">
+    <input type="file" name="file" accept="image/*">
+    <input type="submit" value="アップロード">
+  </form>
 
-        <div class="image-grid">
-            <div>
-                <h4>元画像</h4>
-                <img src="{{ url_for('static', filename='uploads/' + filename) }}">
-            </div>
-            <div><h4>① アンシャープ</h4><img src="{{ url_for('static', filename='results/01_unsharp_mask.jpg') }}"></div>
-            <div><h4>② メディアン</h4><img src="{{ url_for('static', filename='results/02_median.jpg') }}"></div>
-            <div><h4>③ ラプラシアン</h4><img src="{{ url_for('static', filename='results/03_laplacian.jpg') }}"></div>
-            <div><h4>④ CLAHE</h4><img src="{{ url_for('static', filename='results/04_clahe.jpg') }}"></div>
-            <div><h4>⑤-1 デコンボリューション（標準）</h4><img src="{{ url_for('static', filename='results/05_deconv.jpg') }}"></div>
-            <div><h4>⑤-2 デコンボリューション（強）</h4><img src="{{ url_for('static', filename='results/05-2_strong.jpg') }}"></div>
-            <div><h4>⑤-3 デコンボリューション（弱）</h4><img src="{{ url_for('static', filename='results/05-3_mild.jpg') }}"></div>
-        </div>
-    {% endif %}
+  <h2 class="highlight">▶ 複数の手法による画像鮮鋭化の結果</h2>
+  <p>※以下はアップロード前に表示される参考サンプルです</p>
+  <div class="sample-grid" id="default-samples">
+    <img src="{{ url_for('static', filename='fix/r0.png') }}" alt="r0">
+    <img src="{{ url_for('static', filename='fix/r1.png') }}" alt="r1">
+    <img src="{{ url_for('static', filename='fix/r2.png') }}" alt="r2">
+    <img src="{{ url_for('static', filename='fix/r3.png') }}" alt="r3">
+    <img src="{{ url_for('static', filename='fix/r4.png') }}" alt="r4">
+    <img src="{{ url_for('static', filename='fix/r5-3.png') }}" alt="r5-3">
+  </div>
+
+  {% if filename %}
+    <h3>定量・定性評価</h3>
+    <table>
+      <tr>
+        <th>処理名</th>
+        <th>ラプラシアン</th>
+        <th>PSNR</th>
+        <th>SSIM</th>
+        <th>定性コメント</th>
+      </tr>
+      {% for key, val in evaluations.items() %}
+      <tr>
+        <td>{{ loop.index }} 処理</td>
+        <td>{{ val.lap }}</td>
+        <td>{{ val.psnr }}</td>
+        <td>{{ val.ssim }}</td>
+        <td>{{ val.desc }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+
+    <div class="image-grid">
+      <div>
+        <h4>元画像</h4>
+        <img src="{{ url_for('static', filename='uploads/' + filename) }}">
+      </div>
+      <div><h4>① アンシャープ</h4><img src="{{ url_for('static', filename='results/01_unsharp_mask.jpg') }}"></div>
+      <div><h4>② メディアン</h4><img src="{{ url_for('static', filename='results/02_median.jpg') }}"></div>
+      <div><h4>③ ラプラシアン</h4><img src="{{ url_for('static', filename='results/03_laplacian.jpg') }}"></div>
+      <div><h4>④ CLAHE</h4><img src="{{ url_for('static', filename='results/04_clahe.jpg') }}"></div>
+      <div><h4>⑤-1 デコンボリューション（標準）</h4><img src="{{ url_for('static', filename='results/05_deconv.jpg') }}"></div>
+      <div><h4>⑤-2 デコンボリューション（強）</h4><img src="{{ url_for('static', filename='results/05-2_strong.jpg') }}"></div>
+      <div><h4>⑤-3 デコンボリューション（弱）</h4><img src="{{ url_for('static', filename='results/05-3_mild.jpg') }}"></div>
+    </div>
+  {% endif %}
+
+  <h3>▶ RING（デコンボリューション）による画像鮮鋭<br>の結果</h3>
+  <div class="promo-section">
+    <div style="display: flex; justify-content: flex-start; gap: 20px;">
+      <img src="{{ url_for('static', filename='fix/1.png') }}" alt="目の比較">
+      <img src="{{ url_for('static', filename='fix/2.png') }}" alt="森の比較">
+    </div>
+  </div>
+
+  <p>
+    ▶ <a href="https://..." target="_blank">RINGの商品に関するご意見・ご感想はこちらのフォームからお寄せください。</a>
+  </p>
+
+
+
 </body>
 </html>

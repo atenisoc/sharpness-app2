@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>画像鮮鋭化ツール - RING</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 40px;
+        }
+        h2 {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .promo-section img {
+            width: 30%;
+            height: auto;
+            border: 1px solid #888;
+        }
+        .sample-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: flex-start;
+            margin-bottom: 40px;
+        }
+        .sample-grid img {
+            width: 16%;
+            border: 1px solid #888;
+        }
+        .upload-section {
+            margin-top: 60px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- 上部の問い合わせリンク -->
+<p>
+    ▶ <a href="https://..." target="_blank">RINGの商品に関するご意見・ご感想はこちらのフォームからお寄せください。</a>
+</p>
+
+<!-- RING結果のプロモ -->
+<h3>▶ RING（デコンボリューション）による画像鮮鋭<br>の結果</h3>
+<div class="promo-section" style="display: flex; justify-content: flex-start; gap: 20px; margin-bottom: 30px;">
+    <img src="{{ url_for('static', filename='fix/1.png') }}" alt="目の比較">
+    <img src="{{ url_for('static', filename='fix/2.png') }}" alt="森の比較">
+</div>
+
+<!-- ✅ サンプル画像一覧 -->
+<h3>▶ RING（デコンボリューション）処理のサンプル画像</h3>
+<p>※以下はアップロード後に得られる結果のイメージです</p>
+<div class="sample-grid">
+    <img src="{{ url_for('static', filename='fix/r0.png') }}" alt="r0">
+    <img src="{{ url_for('static', filename='fix/r1.png') }}" alt="r1">
+    <img src="{{ url_for('static', filename='fix/r2.png') }}" alt="r2">
+    <img src="{{ url_for('static', filename='fix/r3.png') }}" alt="r3">
+    <img src="{{ url_for('static', filename='fix/r4.png') }}" alt="r4">
+    <img src="{{ url_for('static', filename='fix/r5-3.png') }}" alt="r5-3">
+</div>
+
+<!-- 🔽 画像アップロード -->
+<div class="upload-section">
+    <h2>画像アップロード＆処理</h2>
+    <form method="POST" enctype="multipart/form-data">
+        <input type="file" name="image" accept="image/*">
+        <button type="submit">アップロード</button>
+    </form>
+
+    {% if image_url %}
+        <h3>処理後の画像：</h3>
+        <img src="{{ image_url }}" alt="Processed Image" style="max-width: 100%; margin-top: 20px;">
+    {% endif %}
+</div>
+
+</body>
+</html>
