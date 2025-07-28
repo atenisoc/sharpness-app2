@@ -1,5 +1,5 @@
 flask
-gunicorn           ←★ これを追加
+gunicorn
 Pillow
 opencv-python
 scikit-image
